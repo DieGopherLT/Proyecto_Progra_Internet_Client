@@ -13,7 +13,7 @@ import StudentContext from '../context/StudentContext/StudentContext';
 
 import { Student } from '../interfaces/Student.interface';
 import { RootStackParamList } from '../interfaces/ReactNavitationTypes';
-import { LogInResponse } from '../interfaces/Responses';
+import { StudentResponse } from '../interfaces/Responses';
 
 interface LoginProps {
     navigation: StackNavigationProp<RootStackParamList, 'Login'>;
@@ -27,28 +27,27 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     const [nip, setNip] = useState<string>('');
     const [error, setError] = useState<boolean>(false);
 
-    const [ loginData ] = useFetch({
+    const [loginData] = useFetch({
         isString: true,
-        url: `https://cuceimobile.tech/Escuela/datosudeg.php?codigo=${ studentCode }&nip=${ nip }`
+        url: `https://cuceimobile.tech/Escuela/datosudeg.php?codigo=${ studentCode }&nip=${ nip }`,
     });
 
-    const [ createStudentRequest ] = useFetch<LogInResponse>({
+    const [createStudentRequest] = useFetch<StudentResponse>({
         url: 'http://localhost:4000/api/student/',
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-
+            'Content-Type': 'application/json',
+        },
+    });
 
     useEffect(() => {
         const fetchDataFromStorage = async () => {
             const studentStored = await storage.load({ key: 'student' });
-            if(studentStored){
+            if(studentStored) {
                 setStudent(studentStored);
                 navigation.navigate('Home');
             }
-        }
+        };
         fetchDataFromStorage();
     }, []);
 
@@ -58,7 +57,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
             return;
         }
         const result = await loginData();
-        const dataArray: string[] = result.split(',');
+        const dataArray = result.split(',');
 
         if(dataArray.length > 2) {
             const student: Student = {
@@ -84,18 +83,18 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
         try {
             const studentStored = await storage.load({ key: `student` });
             if(!studentStored) {
-                const response: LogInResponse = await createStudentRequest(JSON.stringify(student));
+                const response = await createStudentRequest(JSON.stringify(student));
                 console.log(`Mensaje de API para crear estudiantes: ${ response.msg }`);
 
                 await storage.save({
                     key: 'student',
                     data: student,
-                    expires: null
+                    expires: null,
                 });
             }
             navigation.navigate('Home');
         } catch(e) {
-            console.warn(e);
+            console.error(e);
         }
     };
 

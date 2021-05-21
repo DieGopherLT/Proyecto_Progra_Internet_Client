@@ -1,30 +1,35 @@
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { DrawerContentProps } from '../components/drawer/DrawerContent';
 
-//Este hook está pensado para proveer props al componente Drawer y hacer disponible la función "toggleOpen"
-const useDrawer = (Content: React.FC<DrawerContentProps>) => {
+interface useDrawerReturn {
+    open: boolean;
+    toggleOpen: () => void;
+    drawerContent: () => JSX.Element;
+}
+
+const useDrawer = (Content: FC<DrawerContentProps>): useDrawerReturn => {
 
     const [open, setOpen] = useState<boolean>(false);
 
     const toggleOpen = () => setOpen(!open);
 
     const drawerContent = () => (
-        <View style={ styles.animatedBox }>
+        <View style={ styles.background }>
             <Content toggleOpen={ toggleOpen } />
         </View>
     );
 
     return {
+        open,
         toggleOpen,
         drawerContent,
-        open
-    }
-}
+    };
+};
 
 const styles = StyleSheet.create({
-    animatedBox: {
+    background: {
         flex: 1,
         backgroundColor: '#033842',
         padding: 10,

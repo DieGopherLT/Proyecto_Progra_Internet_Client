@@ -12,6 +12,7 @@ import { RootStackParamList } from './src/interfaces/ReactNavitationTypes';
 const Stack = createStackNavigator<RootStackParamList>();
 
 const App: React.FC = () => {
+
 	return (
 		<SafeAreaProvider>
 			<StudentState>

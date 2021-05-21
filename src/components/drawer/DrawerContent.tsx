@@ -8,8 +8,7 @@ import useFetch from '../../hooks/useFetch';
 import storage from '../../config/asyncstorage';
 import StudentContext from '../../context/StudentContext/StudentContext';
 
-import { Student } from '../../interfaces/Student.interface';
-import { UploadResponse } from '../../interfaces/UploadResponse.interface';
+import { UploadResponse, StudentResponse } from '../../interfaces/Responses';
 
 export interface DrawerContentProps {
     toggleOpen: () => void;
@@ -22,38 +21,56 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
 
     const navigation = useNavigation();
 
-    const [ uploadImageToServerRequest ] = useFetch<UploadResponse>({
-        url: `http://localhost:4000/api/upload/${ code }`,
+    const [uploadImageToServerRequest] = useFetch<UploadResponse>({
+        url: `https://samdt.000webhostapp.com/upload.php?code=${ code }`,
         method: 'POST',
         headers: {
-            'Accept': 'application/json',
             'Content-type': 'multipart/form-data',
         },
     });
 
-    const [ getImageFromServerRequest ] = useFetch<UploadResponse>({
+    // const [ deleteImageFromServer ] = useFetch<UploadResponse>({
+    //     url: `https://samdt.000webhostapp.com/deleteFile.php?code=${code}`
+    // })
+
+    const [saveImage] = useFetch<UploadResponse>({
+        url: `http://localhost:4000/api/upload/${ code }`,
+        method: 'PUT',
+    });
+
+    const [deleteStudent] = useFetch<StudentResponse>({
+        url: `http://localhost:4000/api/student/${ code }`,
+        method: 'DELETE',
+    });
+
+    const [getImageFromServerRequest] = useFetch<UploadResponse>({
         url: `http://localhost:4000/api/upload/${ code }`,
     });
 
     useEffect(() => {
         const fetchData = async () => {
-            const studentStored = await storage.load({ key: `student` }) as Student;
-            console.log(studentStored.profilePicture ? 'Hay imagen almacenada' : 'No hay imagen');
-
-            if(!studentStored.profilePicture) {
-                await requestImageToServer();
-            }
-            else {
-                setStudent(studentStored);
-            }
+            // const studentStored = await storage.load({ key: `student` }) as Student;
+            // console.log(studentStored.profilePicture ? 'Hay imagen almacenada' : 'No hay imagen');
+            await requestImageToServer();
         };
         fetchData();
     }, []);
 
     const logOut = async () => {
-        await storage.remove({ key: 'student' });
-        setStudent({});
-        navigation.navigate('Login');
+        // await storage.remove({ key: 'student' });
+        try {
+            const promises: Promise<any>[] = [
+                deleteStudent(),
+                storage.remove({ key: 'student' }),
+            ];
+
+            const [delStudent] = await Promise.all(promises);
+            console.log(`Mensaje de API para borrar estudiante: ${ delStudent.msg }`);
+            setStudent({});
+            navigation.navigate('Login');
+        } catch(e) {
+            console.log(e);
+        }
     };
 
     const selectPicture = () => {
@@ -64,8 +81,8 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
         };
 
         launchImageLibrary(imageLibraryOptions, (response: ImagePickerResponse) => {
-              uploadImageServer(response);
-          },
+                uploadImageServer(response);
+            },
         );
     };
 
@@ -80,10 +97,12 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
             const data = new FormData();
             data.append('img', { uri, type, name: fileName });
 
-            const response = await uploadImageToServerRequest(data);
-            console.log(`Mensaje de API subir imágenes al server: ${ response.msg }`);
+            const [serverUpload, serverSave] = await Promise.all([uploadImageToServerRequest(data), saveImage()]);
+
+            console.log(`Mensaje de API subir imágenes al server: ${ serverUpload.msg }`);
+            console.log(`Mensaje de API subir imágenes al server: ${ serverSave.msg }`);
         } catch(error) {
-            console.error(error);
+            console.log(error);
         }
     };
 
@@ -100,22 +119,23 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
     };
 
     return (
-      <ScrollView>
-          <View style={ styles.quitContainer }>
-              <Icon
-                name="x-circle"
-                type="foundation"
-                size={ 50 }
-                color="#FFF"
-                onPress={ toggleOpen }
-              />
-          </View>
+        <ScrollView>
+            <View style={ styles.quitContainer }>
+                <Icon
+                    name="x-circle"
+                    type="foundation"
+                    size={ 50 }
+                    color="#FFF"
+                    onPress={ toggleOpen }
+                />
+            </View>
 
-          { profilePicture
+            { profilePicture
                 ? (
                     <View style={ styles.imageContainer }>
                         <Image
                             source={ { uri: `data:image/jpg;base64,${ profilePicture }` } }
+                            //source={ { uri: profilePicture } }
                             style={ styles.image }
                             resizeMethod="resize"
                             resizeMode="contain"
@@ -123,43 +143,43 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
                     </View>
                 )
                 : null
-          }
+            }
 
-          <View style={ styles.buttonContainer }>
-              <TouchableHighlight style={ styles.buttonUpload } onPress={ selectPicture }>
-                  <Text style={ styles.buttonText }>Subir imagen</Text>
-              </TouchableHighlight>
-          </View>
+            <View style={ styles.buttonContainer }>
+                <TouchableHighlight style={ styles.buttonUpload } onPress={ selectPicture }>
+                    <Text style={ styles.buttonText }>Subir imagen</Text>
+                </TouchableHighlight>
+            </View>
 
-          <View style={ styles.container }>
-              <View style={ styles.dataContainer }>
-                  <Text style={ styles.label }>Nombre:</Text>
-                  <Text style={ styles.text }>{ name }</Text>
-              </View>
+            <View style={ styles.container }>
+                <View style={ styles.dataContainer }>
+                    <Text style={ styles.label }>Nombre:</Text>
+                    <Text style={ styles.text }>{ name }</Text>
+                </View>
 
-              <View style={ styles.dataContainer }>
-                  <Text style={ styles.label }>Código:</Text>
-                  <Text style={ styles.text }>{ code }</Text>
-              </View>
+                <View style={ styles.dataContainer }>
+                    <Text style={ styles.label }>Código:</Text>
+                    <Text style={ styles.text }>{ code }</Text>
+                </View>
 
-              <View style={ styles.dataContainer }>
-                  <Text style={ styles.label }>Universidad:</Text>
-                  <Text style={ styles.text }>{ university }</Text>
-              </View>
+                <View style={ styles.dataContainer }>
+                    <Text style={ styles.label }>Universidad:</Text>
+                    <Text style={ styles.text }>{ university }</Text>
+                </View>
 
-              <View style={ styles.dataContainer }>
-                  <Text style={ styles.label }>Carrera:</Text>
-                  <Text style={ styles.text }>{ career }</Text>
-              </View>
+                <View style={ styles.dataContainer }>
+                    <Text style={ styles.label }>Carrera:</Text>
+                    <Text style={ styles.text }>{ career }</Text>
+                </View>
 
-              <View style={ styles.buttonContainer }>
-                  <TouchableHighlight style={ styles.buttonLogOut } onPress={ logOut }>
-                      <Text style={ styles.buttonText }>Cerrar Sesión</Text>
-                  </TouchableHighlight>
-              </View>
+                <View style={ styles.buttonContainer }>
+                    <TouchableHighlight style={ styles.buttonLogOut } onPress={ logOut }>
+                        <Text style={ styles.buttonText }>Cerrar Sesión</Text>
+                    </TouchableHighlight>
+                </View>
 
-          </View>
-      </ScrollView>
+            </View>
+        </ScrollView>
     );
 };
 

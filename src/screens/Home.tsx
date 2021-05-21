@@ -11,7 +11,7 @@ import useDrawer from '../hooks/useDrawer';
 
 const Home: React.FC = () => {
 
-    const { toggleOpen, open, drawerContent } = useDrawer(DrawerContent);
+    const { open, toggleOpen, drawerContent } = useDrawer(DrawerContent);
 
     return (
         <Drawer
