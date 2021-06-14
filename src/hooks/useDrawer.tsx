@@ -1,15 +1,10 @@
 import React, { FC, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import { DrawerContentProps } from '../components/drawer/DrawerContent';
+import { DrawerContentProps } from '../components/drawer/DrawerContent/DrawerContent';
 
-interface useDrawerReturn {
-    open: boolean;
-    toggleOpen: () => void;
-    drawerContent: () => JSX.Element;
-}
 
-const useDrawer = (Content: FC<DrawerContentProps>): useDrawerReturn => {
+const useDrawer = (Content: FC<DrawerContentProps>) => {
 
     const [open, setOpen] = useState<boolean>(false);
 

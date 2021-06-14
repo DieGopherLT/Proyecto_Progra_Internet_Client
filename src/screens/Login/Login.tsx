@@ -3,17 +3,22 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-import useFetch from '../hooks/useFetch';
+import useFetch from '../../hooks/useFetch';
 
-import UdgLogo from '../components/UdgLogo';
-import InputFontAwesomeIcon from '../components/InputFontAwesomeIcon';
+import UdgLogo from '../../components/UdgLogo';
+import InputFontAwesomeIcon from '../../components/InputFontAwesomeIcon';
 
-import storage from '../config/asyncstorage';
-import StudentContext from '../context/StudentContext/StudentContext';
+import storage from '../../config/asyncstorage';
+import StudentContext from '../../context/StudentContext/StudentContext';
 
-import { Student } from '../interfaces/Student.interface';
-import { RootStackParamList } from '../interfaces/ReactNavitationTypes';
-import { StudentResponse } from '../interfaces/Responses';
+import { Student } from '../../interfaces/Student.interface';
+import { RootStackParamList } from '../../interfaces/ReactNavitationTypes';
+import { StudentResponse } from '../../interfaces/Responses';
+
+import { styles } from './styles';
+import {
+    showAlert,
+} from './helpers';
 
 interface LoginProps {
     navigation: StackNavigationProp<RootStackParamList, 'Login'>;
@@ -27,37 +32,27 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     const [nip, setNip] = useState<string>('');
     const [error, setError] = useState<boolean>(false);
 
-    const [loginData] = useFetch({
+    const [logInRequest] = useFetch({
         isString: true,
         url: `https://cuceimobile.tech/Escuela/datosudeg.php?codigo=${ studentCode }&nip=${ nip }`,
     });
 
     const [createStudentRequest] = useFetch<StudentResponse>({
-        url: 'http://localhost:4000/api/student/',
+        url: 'https://progra-internet-server.herokuapp.com/api/student',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
     });
 
-    useEffect(() => {
-        const fetchDataFromStorage = async () => {
-            const studentStored = await storage.load({ key: 'student' });
-            if(studentStored) {
-                setStudent(studentStored);
-                navigation.navigate('Home');
-            }
-        };
-        fetchDataFromStorage();
-    }, []);
-
     const logIn = async () => {
         if(studentCode === '' || nip === '') {
             showAlert();
             return;
         }
-        const result = await loginData();
-        const dataArray = result.split(',');
+        //Will return a string with student info if student exists, will return zero if the student does not exist
+        const logInResponse = await logInRequest();
+        const dataArray = logInResponse.split(',');
 
         if(dataArray.length > 2) {
             const student: Student = {
@@ -66,11 +61,13 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
                 university: dataArray[3],
                 career: dataArray[4],
             };
+
             setStudentCode('');
             setNip('');
             setStudent(student);
 
             await createStudent(student);
+            navigation.navigate('Home');
         }
         else {
             setError(true);
@@ -78,13 +75,14 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
         }
     };
 
+    //Crea el registro del estudiante en la base de datos y almacena en AsyncStorage
     const createStudent = async (student: Student) => {
 
         try {
             const studentStored = await storage.load({ key: `student` });
             if(!studentStored) {
-                const response = await createStudentRequest(JSON.stringify(student));
-                console.log(`Mensaje de API para crear estudiantes: ${ response.msg }`);
+                const createStudentResponse = await createStudentRequest(JSON.stringify(student));
+                console.log(`Mensaje de API para crear estudiantes: ${ createStudentResponse.msg }`);
 
                 await storage.save({
                     key: 'student',
@@ -92,16 +90,9 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
                     expires: null,
                 });
             }
-            navigation.navigate('Home');
         } catch(e) {
             console.error(e);
         }
-    };
-
-    const showAlert = () => {
-        Alert.alert('Error', 'Ambos campos son obligatorios', [
-            { text: 'Ok' },
-        ]);
     };
 
     return (
@@ -148,48 +139,5 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    bg: {
-        backgroundColor: '#042b50',
-        minHeight: '100%',
-    },
-    loginContainer: {
-        backgroundColor: '#fff',
-        width: '90%',
-        marginHorizontal: '5%',
-        marginTop: 15,
-        borderRadius: 10,
-        padding: 20,
-    },
-    tittle: {
-        fontSize: 18,
-        marginBottom: 10,
-        textAlign: 'center',
-    },
-    errorContainer: {
-        marginTop: 20,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: 'red',
-        borderStyle: 'solid',
-    },
-    errorMessage: {
-        textAlign: 'center',
-        fontSize: 18,
-        color: 'red',
-    },
-    logInButtonContainer: {},
-    logInButton: {
-        backgroundColor: 'green',
-        borderRadius: 10,
-        padding: 10,
-    },
-    logInButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        textAlign: 'center',
-    },
-});
 
 export default Login;

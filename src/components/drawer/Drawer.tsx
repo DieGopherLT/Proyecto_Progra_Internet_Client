@@ -1,7 +1,7 @@
 import React, { ReactElement, FC } from 'react';
 import MenuDrawer from 'react-native-side-drawer';
 
-import { DrawerContentProps } from './DrawerContent';
+import { DrawerContentProps } from './DrawerContent/DrawerContent';
 
 interface DrawerProps{
     open: boolean;
