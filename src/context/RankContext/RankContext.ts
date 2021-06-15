@@ -1,8 +1,9 @@
-import { createContext, Dispatch, SetStateAction } from 'react';
+import { createContext } from 'react';
 
-interface RankContextProps{
-    currentStudentUpdatedData: boolean;
-    setCurrentStudentUpdatedData: Dispatch<SetStateAction<boolean>>;
+import { RankReducerProps } from './RankReducer';
+
+interface RankContextProps extends RankReducerProps{
+    changeData: () => void;
 }
 
 const rankContext = createContext({} as RankContextProps);
