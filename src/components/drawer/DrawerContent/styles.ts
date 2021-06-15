@@ -23,6 +23,7 @@ export const styles = StyleSheet.create({
     image: {
         height: 160,
         width: 160,
+        borderRadius: 100
     },
     dataContainer: {
         marginTop: 5,

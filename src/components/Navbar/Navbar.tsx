@@ -31,7 +31,7 @@ const Navbar: FunctionComponent<NavbarProps> = ({ toggleOpen }) => {
                 />
             </View>
         </View>
-    )
+    );
 }
 
 export default Navbar;

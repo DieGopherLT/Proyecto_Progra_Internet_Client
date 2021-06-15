@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
-import { View, Text, TouchableHighlight, Image, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Icon } from 'react-native-elements';
+import { Icon, Avatar as Aang } from 'react-native-elements';
 import { ImageLibraryOptions, ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 
 import Button from '../../Button';
@@ -9,6 +9,7 @@ import Button from '../../Button';
 import useFetch from '../../../hooks/useFetch';
 import storage from '../../../config/asyncstorage';
 import StudentContext from '../../../context/StudentContext/StudentContext';
+import RankContext from '../../../context/RankContext/RankContext';
 
 import { UploadResponse, StudentResponse } from '../../../interfaces/Responses';
 import { styles } from './styles';
@@ -19,6 +20,7 @@ export interface DrawerContentProps {
 
 const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
 
+    const { changeData } = useContext(RankContext);
     const { student, setStudent } = useContext(StudentContext);
     const { name, code, university, career, profilePicture } = student;
 
@@ -70,16 +72,16 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
             quality: 1,
         };
 
-        launchImageLibrary(imageLibraryOptions, (response: ImagePickerResponse) => {
-                uploadImage(response);
+        launchImageLibrary(imageLibraryOptions, async (response: ImagePickerResponse) => {
+                await uploadImage(response)
             },
         );
     };
 
     //Sube la imagen a la App y al servidor
-    const uploadImage = async ({ uri, type, fileName }: ImagePickerResponse) => {
+    const uploadImage = async ({ uri, type, fileName, didCancel }: ImagePickerResponse) => {
 
-        if(!uri) return;
+        if(didCancel) return;
 
         try {
             const data = new FormData();
@@ -88,6 +90,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
             const uploadImageToServerResponse = await uploadImageToServerRequest(data);
             setStudent({ ...student, profilePicture: uploadImageToServerResponse.host });
             await storage.save({ key: 'student', data: student });
+            changeData();
 
             console.log(`Mensaje de API subir imágenes al server: ${ uploadImageToServerResponse.msg }`);
         } catch(error) {
@@ -123,11 +126,10 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
                 { profilePicture
                     ? (
                         <View style={ styles.imageContainer }>
-                            <Image
+                            <Aang
                                 source={ { uri: profilePicture } }
-                                style={ styles.image }
-                                resizeMethod="resize"
-                                resizeMode="contain"
+                                size="xlarge"
+                                rounded
                             />
                         </View>
                     )

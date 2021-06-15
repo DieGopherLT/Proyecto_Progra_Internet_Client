@@ -5,7 +5,7 @@ export const styles = StyleSheet.create({
         marginHorizontal: '5%',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     tittle: {
         fontSize: 15,

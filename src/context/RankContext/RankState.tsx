@@ -3,10 +3,11 @@ import React, { FunctionComponent, useReducer, useContext, useEffect } from 'rea
 import useFetch from '../../hooks/useFetch';
 
 import RankReducer, { RankReducerProps } from './RankReducer';
-import rankContext from './RankContext';
+import RankContext from './RankContext';
 import StudentContext from '../StudentContext/StudentContext';
 
 import { RankData } from '../../interfaces/Responses';
+import { StudentPlace } from '../../interfaces/RankData.interface';
 
 const RankState: FunctionComponent = ({ children }) => {
 
@@ -20,46 +21,32 @@ const RankState: FunctionComponent = ({ children }) => {
 
     const [state, dispatch] = useReducer(RankReducer, initialState);
 
-    const [ rankDataRequest ] = useFetch<RankData>({
-        url: `https://progra-internet-server.herokuapp.com/api/student/${ code }`,
-        method: 'GET',
-    });
-
-    useEffect(() => {
-        const fetchData = async () => {
-            if(state.studentDidUpdateData){
-                try {
-                    const { positionList, studentPlace } = await rankDataRequest();
-                    const payload = (studentPlace) ? [...positionList, studentPlace] : [...positionList];
-                    dispatch({ type: 'GET_RANK_LIST', payload });
-                }
-                catch(e) {
-                    console.log(e);
-                    dispatch({ type: 'GET_RANK_LIST', payload: [] });
-                }
-            }
-        }
-        fetchData();
-    }, [state.studentDidUpdateData]);
-
     const changeData = () => {
         dispatch({
             type: 'STUDENT_DATA_CHANGED'
         });
     };
 
+    const setRankList = (payload: StudentPlace[]) => {
+        dispatch({
+            type: 'GET_RANK_LIST',
+            payload
+        });
+    }
+
     return (
-        <rankContext.Provider
+        <RankContext.Provider
             value={{
                 dataLoaded: state.dataLoaded,
                 studentDidUpdateData: state.studentDidUpdateData,
                 studentRankList: state.studentRankList,
 
-                changeData
+                changeData,
+                setRankList
             }}
         >
             { children }
-        </rankContext.Provider>
+        </RankContext.Provider>
     )
 }
 

@@ -11,6 +11,7 @@ import List from '../../components/RankList/List/List';
 import useFetch from '../../hooks/useFetch';
 import useDrawer from '../../hooks/useDrawer';
 
+import RankContext from '../../context/RankContext/RankContext';
 import StudentContext from '../../context/StudentContext/StudentContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../interfaces/ReactNavitationTypes';
@@ -26,11 +27,12 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ navigation }) => {
 
+    const { dataLoaded, studentRankList, studentDidUpdateData, setRankList } = useContext(RankContext);
     const { student } = useContext(StudentContext);
     const { code } = student;
 
-    const [studentRankList, setStudentRankList] = useState<StudentPlace[]>([]);
-    const [dataLoaded, setDataLoaded] = useState<boolean>(false);
+    // const [studentRankList, setStudentRankList] = useState<StudentPlace[]>([]);
+    // const [dataLoaded, setDataLoaded] = useState<boolean>(false);
 
     const { open, toggleOpen, drawerContent } = useDrawer(DrawerContent);
 
@@ -41,23 +43,19 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
 
     useEffect(() => {
         const fetchRankData = async () => {
-            setDataLoaded(false);
-            try {
-                const { positionList, studentPlace } = await rankDataRequest();
-
-                if(studentPlace)
-                    setStudentRankList([...positionList, studentPlace])
-                else
-                    setStudentRankList(positionList);
-
-                setDataLoaded(true);
-            } catch(e) {
-                console.log(e);
-                setStudentRankList([]);
+            if(studentDidUpdateData){
+                try {
+                    const { positionList, studentPlace } = await rankDataRequest();
+                    const payload = (studentPlace) ? [...positionList, studentPlace] : [...positionList];
+                    setRankList(payload);
+                } catch(e) {
+                    console.log(e);
+                    setRankList([]);
+                }
             }
         };
         fetchRankData();
-    }, [student]);
+    }, [studentDidUpdateData]);
 
     useEffect(() => {
         const preventLeaving = () => {

@@ -2,10 +2,10 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
     container: {
-        marginHorizontal: '5%'
+        marginTop: 10,
+        marginHorizontal: '5%',
     },
     goBackContainer: {
-        marginTop: 10,
         flexDirection: 'row',
         alignItems: 'center'
     },
@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center'
     },
-    initalDataContainer: {
+    initialDataContainer: {
         marginTop: 20,
         marginHorizontal: '20%'
     },
