@@ -115,10 +115,13 @@ const Submit: FunctionComponent<SubmitProps> = ({ navigation }) => {
             drawerContent={ drawerContent() }
         >
             <SafeAreaView>
-                <ScrollView>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={ onRefresh } />
+                    }
+                >
                     <Navbar toggleOpen={ toggleOpen }/>
-                    <RefreshControl refreshing={ refreshing } onRefresh={ onRefresh } style={ styles.container }>
-                        <View>
+                        <View style={ styles.container }>
                             <View style={ styles.goBackContainer }>
                                 <Icon
                                     type="font-awesome"
@@ -186,7 +189,6 @@ const Submit: FunctionComponent<SubmitProps> = ({ navigation }) => {
                             }
 
                         </View>
-                    </RefreshControl>
                 </ScrollView>
             </SafeAreaView>
         </Drawer>

@@ -2,7 +2,6 @@ import React, { ReactElement, FC } from 'react';
 import MenuDrawer from 'react-native-side-drawer';
 
 import { DrawerContentProps } from './DrawerContent/DrawerContent';
-import { View } from 'react-native';
 
 interface DrawerProps{
     open: boolean;

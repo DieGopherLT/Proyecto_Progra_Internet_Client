@@ -16,22 +16,19 @@ export const styles = StyleSheet.create({
         alignItems: 'center'
     },
     loadingBarContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 100,
+        marginTop: 150,
         marginHorizontal: '10%'
     },
     loadingBarText: {
-        fontSize: 14,
-        marginVertical: 10
+        fontSize: 16,
+        marginVertical: 10,
+        textAlign: 'center'
     },
 
 
-    //Proximo a componentizar
     goSubmitButtonContainer: {
         marginTop: 10,
-        marginBottom: 30,
+        marginBottom: 120,
         marginHorizontal: '10%'
     },
 });
