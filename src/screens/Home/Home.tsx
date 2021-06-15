@@ -85,7 +85,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
             <SafeAreaView>
                 <Navbar toggleOpen={ toggleOpen }/>
                     {
-                        dataLoaded  //Aqui
+                        dataLoaded  
                             ?
                                 (
                                     <ScrollView
