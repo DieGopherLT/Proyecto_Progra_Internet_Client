@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useEffect, useContext } from 'react';
+import React, { FunctionComponent, useState, useEffect, useContext, Fragment } from 'react';
 import { SafeAreaView, ScrollView, View, Text, Image, RefreshControl } from 'react-native';
 import { LinearProgress } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -7,6 +7,8 @@ import { Icon } from 'react-native-elements';
 import DrawerContent from '../../components/drawer/DrawerContent/DrawerContent';
 import Drawer from '../../components/drawer/Drawer';
 import Navbar from '../../components/Navbar/Navbar';
+import SubmitInitialData from '../../components/SubmitInitialData/SubmitInitialData';
+import SubmitForm from '../../components/SubmitForm/SubmitForm';
 
 import useFetch from '../../hooks/useFetch';
 import useDrawer from '../../hooks/useDrawer';
@@ -147,35 +149,15 @@ const Submit: FunctionComponent<SubmitProps> = ({ navigation }) => {
                                 dataLoaded
                                     ?
                                         (
-                                            <View style={ styles.initialDataContainer }>
-                                                <View style={ styles.numbersContainer }>
-                                                    <Text>1</Text>
-                                                    <Text>Dias</Text>
-                                                    <Text>14</Text>
-                                                </View>
-                                                <LinearProgress
-                                                    color="primary"
-                                                    value={ daysProgress }
-                                                    variant="determinate"
-                                                    style={ styles.barSize }
+                                            <Fragment>
+                                                <SubmitInitialData
+                                                    daysProgress={ daysProgress }
+                                                    kilometersProgress={ kilometersProgress }
+                                                    currentPosition={ currentPosition }
+                                                    lastPosition={ lastPosition }
                                                 />
-
-                                                <View style={ [styles.numbersContainer, { marginTop: 10 }] }>
-                                                    <Text>0</Text>
-                                                    <Text>Kilometros</Text>
-                                                    <Text>10</Text>
-                                                </View>
-                                                <LinearProgress
-                                                    color="primary"
-                                                    value={ kilometersProgress }
-                                                    variant="determinate"
-                                                    style={ styles.barSize }
-                                                />
-
-                                                <Text style={ styles.positionIndicatorText }>
-                                                    Tu posición: { currentPosition }/{ lastPosition }
-                                                </Text>
-                                            </View>
+                                                <SubmitForm />
+                                            </Fragment>
                                         )
                                     :
                                         (
