@@ -1,6 +1,9 @@
-# Programación para internet - Proyecto/Cliente
+# Programación para internet - Proyecto/Cliente Nativo Android
 
-Cliente que consume el backend del proyecto para 
-programación para internet
+- Alumno: Diego López Torres 
+- Código: 215672951
+- Sección: D01
 
-**Hecho en Typescript, papu.**
+Cliente React Native que consume la siguiente [API](https://github.com/DieGordoLT/Proyecto_Progra_Internet_Server) 
+
+Nota del autor: **¡Hecho con mucho amor en Typescript!**
