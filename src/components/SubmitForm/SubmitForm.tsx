@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState, Fragment } from 'react';
-import { View, StyleSheet, Text, Image } from 'react-native';
+import { View, StyleSheet, Text, Image, ToastAndroid } from 'react-native';
 import { Divider, Input } from 'react-native-elements';
 import {
         launchImageLibrary,
@@ -11,16 +11,40 @@ import {
 
 import Button from '../Button';
 
-interface SubmitFormProps{
+import useFetch from '../../hooks/useFetch';
 
+import { StudentResponse, UploadResponse } from '../../interfaces/Responses';
+import { Student } from '../../interfaces/Student.interface';
+
+import { styles } from './styles';
+
+interface SubmitFormProps{
+    student: Student;
 }
 
-const SubmitForm: FunctionComponent<SubmitFormProps> = (props) => {
+const SubmitForm: FunctionComponent<SubmitFormProps> = ({ student }) => {
 
-    const [image, setImage] = useState<string>('');
-    const [minutes, setMinutes] = useState<string>('');
-    const [meters, setMeters] = useState<string>('');
+    const [data, setData] = useState({
+        image: '',
+        name: '',
+        type: '',
+        minutes: '',
+        meters: ''
+    });
     const [wasFromGallery, setWasFromGallery] = useState<boolean>(false);
+
+    const [uploadEvidenceImageRequest] = useFetch<UploadResponse>({
+        url: 'https://samdt.000webhostapp.com/uploadEvidence.php',
+        method: 'POST'
+    });
+
+    const [updateVerifyDatabaseRequest] = useFetch<StudentResponse>({
+        url: 'https://progra-internet-server.herokuapp.com/api/progress/',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
 
     const selectPicture = () => {
         const options: ImageLibraryOptions = {
@@ -28,10 +52,11 @@ const SubmitForm: FunctionComponent<SubmitFormProps> = (props) => {
             quality: 1
         }
 
-        launchImageLibrary(options, ({ didCancel, uri }: ImagePickerResponse) => {
+        launchImageLibrary(options, ({ didCancel, uri, type, fileName }: ImagePickerResponse) => {
             setWasFromGallery(true);
-            if(!didCancel)
-                setImage(uri as string);
+            if(!didCancel) {
+                setData({ ...data, image: uri as string, type: type as string, name: fileName as string });
+            }
         })
     }
 
@@ -42,16 +67,54 @@ const SubmitForm: FunctionComponent<SubmitFormProps> = (props) => {
             mediaType: 'photo',
         }
 
-        launchCamera(options, ({ didCancel, uri }: ImagePickerResponse) => {
-            if(!didCancel)
-                setImage(uri as string);
+        launchCamera(options, ({ didCancel, uri, type, fileName }: ImagePickerResponse) => {
+            if(!didCancel){
+                setData({ ...data, image: uri as string, type: type as string, name: fileName as string });
+            }
         })
     }
 
+    const submitRequestToServer = async () => {
+
+        if(Object.values(data).some(field => field === '')){
+            ToastAndroid.show('Todos los campos son obligatorios', 4000);
+            return ;
+        }
+
+        try {
+            const imgData = new FormData();
+            imgData.append('img', { uri: data.image, type: data.type, name: data.name });
+            const uploadEvidenceImageResponse = await uploadEvidenceImageRequest(imgData);
+
+            const requestData = {
+                code: student.code,
+                name: student.name,
+                image: uploadEvidenceImageResponse.host,
+                distance: data.meters,
+                time: data.minutes
+            };
+
+            const updateVerifyDatabaseResponse = await updateVerifyDatabaseRequest(JSON.stringify(requestData));
+            ToastAndroid.show(updateVerifyDatabaseResponse.msg, 4000);
+            setData({
+                meters: '',
+                image: '',
+                minutes: '',
+                type: '',
+                name: ''
+            });
+        }
+        catch(e) {
+            console.error(e);
+        }
+    }
+
     const deleteImage = () => {
-        setImage('');
+        setData({...data, image: ''});
         setWasFromGallery(false);
     }
+
+    const { meters, minutes, image } = data;
 
     return (
         <View style={ styles.container }>
@@ -61,15 +124,17 @@ const SubmitForm: FunctionComponent<SubmitFormProps> = (props) => {
             <View style={ styles.inputsContainer }>
                 <Input
                     value={ meters }
-                    onChangeText={ value => setMeters(value) }
+                    onChangeText={ value => setData({ ...data, meters: value }) }
                     label='Distancia (mts)'
                     containerStyle={ styles.input }
+                    keyboardType="number-pad"
                 />
                 <Input
                     value={ minutes }
-                    onChangeText={ value => setMinutes(value) }
+                    onChangeText={ value => setData({ ...data, minutes: value }) }
                     label='Tiempo (mins)'
                     containerStyle={ styles.input }
+                    keyboardType="number-pad"
                 />
             </View>
 
@@ -87,7 +152,7 @@ const SubmitForm: FunctionComponent<SubmitFormProps> = (props) => {
                     :
                         (
                             <View style={ styles.imageContainer }>
-                                <Text style={ styles.text }>La imagen cargada será mostrada aquí</Text>
+                                <Text style={ styles.text }>Se debe subir una imagen como evidencia.</Text>
                             </View>
                         )
             }
@@ -136,48 +201,11 @@ const SubmitForm: FunctionComponent<SubmitFormProps> = (props) => {
             <Button
                 backgroundColor="green"
                 text="Subir progreso"
-                onPress={ () => console.log('Hola') }
+                onPress={ submitRequestToServer }
                 containerStyles={ styles.buttonContainer }
             />
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        marginTop: 10,
-        marginHorizontal: '5%',
-        marginBottom: 175
-    },
-    divider: {
-        marginVertical: 10
-    },
-    tittle: {
-        fontSize: 24,
-        marginLeft: 10
-    },
-    text: {
-        fontSize: 14
-    },
-    inputsContainer: {
-        flexDirection: 'row',
-        marginTop: 10,
-        alignItems: 'baseline'
-    },
-    input: {
-        width: '50%'
-    },
-    imageContainer: {
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    image: {
-        width: 200,
-        height: 200
-    },
-    buttonContainer: {
-        marginTop: 15
-    }
-});
 
 export default SubmitForm;

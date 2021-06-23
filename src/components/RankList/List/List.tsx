@@ -1,4 +1,5 @@
 import React, { FunctionComponent, Fragment } from 'react';
+import { FlatList } from 'react-native';
 
 import StudentCard from '../StudentCard/StudentCard';
 
@@ -11,7 +12,7 @@ interface RankListProps {
 const List: FunctionComponent<RankListProps> = ({ studentRankList }) => {
 
     return (
-        <>
+        <Fragment>
             { studentRankList.map(({ student, place }) => (
                 <StudentCard
                     key={ student.id }
@@ -19,7 +20,7 @@ const List: FunctionComponent<RankListProps> = ({ studentRankList }) => {
                     place={ place }
                 />
             )) }
-        </>
+        </Fragment>
     );
 };
 

@@ -18,27 +18,24 @@ export const styles = StyleSheet.create({
         marginBottom: 10,
         textAlign: 'center',
     },
-    errorContainer: {
-        marginTop: 20,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: 'red',
-        borderStyle: 'solid',
-    },
-    errorMessage: {
-        textAlign: 'center',
-        fontSize: 18,
-        color: 'red',
-    },
     logInButtonContainer: {},
-    logInButton: {
-        backgroundColor: 'green',
+
+    modalContainer: {
+        marginTop: 100,
+        marginHorizontal: '10%',
+        width: '80%',
+        height: 150,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+        padding: 20,
         borderRadius: 10,
-        padding: 10,
+        borderWidth: 1,
+        borderColor: '#939191',
+        borderStyle: 'solid'
     },
-    logInButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        textAlign: 'center',
-    },
+    modalText: {
+        fontWeight: 'bold',
+        textAlign: 'center'
+    }
 });

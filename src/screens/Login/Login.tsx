@@ -1,7 +1,8 @@
 /* eslint-disable */
-import React, { useContext, useEffect, useState } from 'react';
-import { Alert, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { Text, View, Modal } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Icon } from 'react-native-elements';
 
 import useFetch from '../../hooks/useFetch';
 
@@ -16,9 +17,7 @@ import { RootStackParamList } from '../../interfaces/ReactNavitationTypes';
 import { StudentResponse } from '../../interfaces/Responses';
 
 import { styles } from './styles';
-import {
-    showAlert,
-} from './helpers';
+import Button from '../../components/Button';
 
 interface LoginProps {
     navigation: StackNavigationProp<RootStackParamList, 'Login'>;
@@ -30,7 +29,8 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
 
     const [studentCode, setStudentCode] = useState<string>('');
     const [nip, setNip] = useState<string>('');
-    const [error, setError] = useState<boolean>(false);
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
+    const [modalText, setModalText] = useState<string>('');
 
     const [logInRequest] = useFetch({
         isString: true,
@@ -47,10 +47,10 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
 
     const logIn = async () => {
         if(studentCode === '' || nip === '') {
-            showAlert();
+            showAlert('Todos los campos son obligatorios.');
             return;
         }
-        //Will return a string with student info if student exists, will return zero if the student does not exist
+
         const logInResponse = await logInRequest();
         const dataArray = logInResponse.split(',');
 
@@ -70,8 +70,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
             navigation.navigate('Home');
         }
         else {
-            setError(true);
-            setTimeout(() => setError(false), 5000);
+            showAlert('Estudiante no encontrado, credenciales incorrectas. Ingrese sus datos nuevamente.');
         }
     };
 
@@ -79,25 +78,49 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     const createStudent = async (student: Student) => {
 
         try {
-            const studentStored = await storage.load({ key: `student` });
-            if(!studentStored) {
-                const createStudentResponse = await createStudentRequest(JSON.stringify(student));
-                console.log(`Mensaje de API para crear estudiantes: ${ createStudentResponse.msg }`);
+            const createStudentResponse = await createStudentRequest(JSON.stringify(student));
+            console.log(`Mensaje de API para crear estudiantes: ${ createStudentResponse.msg }`);
 
-                await storage.save({
-                    key: 'student',
-                    data: student,
-                    expires: null,
-                });
-            }
+            await storage.save({
+                key: 'student',
+                data: student,
+                expires: null,
+            });
         } catch(e) {
             console.error(e);
         }
     };
 
+    const showAlert = (msg: string) => {
+        setModalText(msg);
+        setModalOpen(true);
+
+        setTimeout(() => {
+            setModalOpen(false);
+            setModalText('');
+        }, 5000);
+    };
+
     return (
         <View style={ styles.bg }>
             <View style={ styles.loginContainer }>
+
+                <Modal
+                    animationType="fade"
+                    visible={ modalOpen }
+                    transparent
+                >
+                    <View style={ styles.modalContainer }>
+                        <Icon
+                            type="foundation"
+                            name="x-circle"
+                            color="red"
+                            size={ 80 }
+                        />
+                        <Text style={ styles.modalText }>{ modalText }</Text>
+                    </View>
+                </Modal>
+
                 <Text style={ styles.tittle }>Inicie sesión</Text>
 
                 <UdgLogo/>
@@ -120,21 +143,13 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
                     secureTextEntry
                 />
 
-                <View style={ styles.logInButtonContainer }>
-                    <TouchableHighlight style={ styles.logInButton } onPress={ logIn }>
-                        <Text style={ styles.logInButtonText }>Iniciar sesión</Text>
-                    </TouchableHighlight>
-                </View>
+                <Button
+                    backgroundColor="green"
+                    text="Iniciar sesión"
+                    onPress={ logIn }
+                    containerStyles={ styles.logInButtonContainer }
+                />
 
-                { error
-                    ? (
-                        <View style={ styles.errorContainer }>
-                            <Text style={ styles.errorMessage }>Hubo un error, verifica que tus credenciales son
-                                correctas.</Text>
-                        </View>
-                    )
-                    : null
-                }
             </View>
         </View>
     );

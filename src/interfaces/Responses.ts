@@ -8,7 +8,6 @@ export interface StudentResponse{
 export interface UploadResponse{
     msg?: string;
     img?: string;
-    filename?: string;
     host?: string;
 }
 

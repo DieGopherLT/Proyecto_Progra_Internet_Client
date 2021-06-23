@@ -29,7 +29,8 @@ interface SubmitProps {
 const Submit: FunctionComponent<SubmitProps> = ({ navigation }) => {
 
     const { changeData } = useContext(RankContext);
-    const { student: { code } } = useContext(StudentContext);
+    const { student } = useContext(StudentContext);
+    const { code } = student;
 
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
     const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -80,14 +81,12 @@ const Submit: FunctionComponent<SubmitProps> = ({ navigation }) => {
 
         const initialMarathonYear = parseInt(year);
         const initialMarathonMonth = parseInt(month.charAt(1)) - 1;
-        const initialMarathonDay = parseInt(day.charAt(1));
+        const initialMarathonDay = parseInt((day.charAt(0) === '0') ? day.charAt(1) : day);
 
         const initialDate = new Date(initialMarathonYear, initialMarathonMonth, initialMarathonDay);
-        // const finishDate = new Date(initialMarathonYear, initialMarathonMonth, initialMarathonDay + 14);
-        const todayDay = new Date().toLocaleDateString().split('/')[1];
-        const currentDay = parseInt(todayDay) - initialDate.getDate();
-
-        return currentDay / 14;
+        const todayDay = new Date().getDate();
+        const currentDay = todayDay - initialDate.getDate();
+        return currentDay / 10;
     };
 
     const kilometerProgression = (meters: string): number => {
@@ -156,7 +155,9 @@ const Submit: FunctionComponent<SubmitProps> = ({ navigation }) => {
                                                     currentPosition={ currentPosition }
                                                     lastPosition={ lastPosition }
                                                 />
-                                                <SubmitForm />
+                                                <SubmitForm
+                                                    student={ student }
+                                                />
                                             </Fragment>
                                         )
                                     :

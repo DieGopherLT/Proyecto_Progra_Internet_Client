@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { View, Text, ScrollView, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { Icon, Avatar as Aang } from 'react-native-elements';
 import { ImageLibraryOptions, ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 
@@ -25,6 +25,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
     const { name, code, university, career, profilePicture } = student;
 
     const navigation = useNavigation();
+    const isFocused = useIsFocused();
 
     const [uploadImageToServerRequest] = useFetch<UploadResponse>({
         url: `https://samdt.000webhostapp.com/upload.php?code=${ code }`,
@@ -48,18 +49,17 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
             await requestImageToServer();
         };
         fetchData();
-    }, []);
+    }, [isFocused]);
 
     const logOut = async () => {
         try {
-            const promises: Promise<any>[] = [
-                deleteStudentRequest(),
-                storage.remove({ key: 'student' }),
-            ];
+            await storage.remove({ key: 'student' });
+            const deleteStudentResponse = await deleteStudentRequest();
 
-            const [deleteStudentResponse] = await Promise.all(promises);
             console.log(`Mensaje de API para borrar estudiante: ${ deleteStudentResponse.msg }`);
+
             setStudent({});
+            toggleOpen();
             navigation.navigate('Login');
         } catch(e) {
             console.log(e);
@@ -73,7 +73,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
         };
 
         launchImageLibrary(imageLibraryOptions, async (response: ImagePickerResponse) => {
-                await uploadImage(response)
+                await uploadImage(response);
             },
         );
     };
