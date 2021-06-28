@@ -34,12 +34,14 @@ const SubmitForm: FunctionComponent<SubmitFormProps> = ({ student }) => {
     const [wasFromGallery, setWasFromGallery] = useState<boolean>(false);
 
     const [uploadEvidenceImageRequest] = useFetch<UploadResponse>({
-        url: 'https://samdt.000webhostapp.com/uploadEvidence.php',
+        domain: 'https://samdt.000webhostapp.com/',
+        path: 'uploadEvidence.php',
         method: 'POST'
     });
 
     const [updateVerifyDatabaseRequest] = useFetch<StudentResponse>({
-        url: 'https://progra-internet-server.herokuapp.com/api/progress/',
+        domain: 'https://progra-internet-server.herokuapp.com/',
+        path: 'api/progress/',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -79,6 +81,11 @@ const SubmitForm: FunctionComponent<SubmitFormProps> = ({ student }) => {
         if(Object.values(data).some(field => field === '')){
             ToastAndroid.show('Todos los campos son obligatorios', 4000);
             return ;
+        }
+
+        if(data.meters.includes('.') || data.minutes.includes(':')){
+            ToastAndroid.show('Ingrese numeros enteros en los metros y minutos, por favor.', 4000);
+            return;
         }
 
         try {

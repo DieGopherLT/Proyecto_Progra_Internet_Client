@@ -34,11 +34,14 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
 
     const [logInRequest] = useFetch({
         isString: true,
-        url: `https://cuceimobile.tech/Escuela/datosudeg.php?codigo=${ studentCode }&nip=${ nip }`,
+        domain: 'https://cuceimobile.tech/Escuela/',
+        path: `datosudeg.php?codigo=${ studentCode }&nip=${ nip }`,
+        method: 'GET'
     });
 
     const [createStudentRequest] = useFetch<StudentResponse>({
-        url: 'https://progra-internet-server.herokuapp.com/api/student',
+        domain: 'https://progra-internet-server.herokuapp.com/',
+        path: 'api/student',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

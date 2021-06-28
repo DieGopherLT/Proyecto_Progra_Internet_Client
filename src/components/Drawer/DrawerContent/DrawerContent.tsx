@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, memo } from 'react';
 import { View, Text, ScrollView, SafeAreaView } from 'react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { Icon, Avatar as Aang } from 'react-native-elements';
@@ -18,7 +18,7 @@ export interface DrawerContentProps {
     toggleOpen: () => void;
 }
 
-const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
+const DrawerContent: React.FC<DrawerContentProps> = (({ toggleOpen }) => {
 
     const { changeData } = useContext(RankContext);
     const { student, setStudent } = useContext(StudentContext);
@@ -28,7 +28,8 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
     const isFocused = useIsFocused();
 
     const [uploadImageToServerRequest] = useFetch<UploadResponse>({
-        url: `https://samdt.000webhostapp.com/upload.php?code=${ code }`,
+        domain: 'https://samdt.000webhostapp.com/',
+        path: `upload.php?code=${ code }`,
         method: 'POST',
         headers: {
             'Content-type': 'multipart/form-data',
@@ -36,12 +37,15 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
     });
 
     const [deleteStudentRequest] = useFetch<StudentResponse>({
-        url: `https://progra-internet-server.herokuapp.com/api/student/${ code }`,
+        domain: 'https://progra-internet-server.herokuapp.com/',
+        path: `student/${ code }`,
         method: 'DELETE',
     });
 
     const [getImageFromServerRequest] = useFetch<UploadResponse>({
-        url: `https://progra-internet-server.herokuapp.com/api/upload/${ code }`,
+        domain: 'https://progra-internet-server.herokuapp.com/',
+        path: `api/upload/${ code }`,
+        method: 'GET'
     });
 
     useEffect(() => {
@@ -53,7 +57,10 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
 
     const logOut = async () => {
         try {
-            await storage.remove({ key: 'student' });
+            const deleteStudentFromStoragePromise = storage.save({ key: 'student', data: null });
+            const deleteAccomplishedFromStoragePromise = storage.save({ key: 'accomplished', data: false });
+
+            await Promise.all([deleteAccomplishedFromStoragePromise, deleteStudentFromStoragePromise]);
             const deleteStudentResponse = await deleteStudentRequest();
 
             console.log(`Mensaje de API para borrar estudiante: ${ deleteStudentResponse.msg }`);
@@ -92,9 +99,9 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
             await storage.save({ key: 'student', data: student });
             changeData();
 
-            console.log(`Mensaje de API subir imágenes al server: ${ uploadImageToServerResponse.msg }`);
+            // console.log(`Mensaje de API subir imágenes al server: ${ uploadImageToServerResponse.msg }`);
         } catch(error) {
-            console.log(error);
+            console.error(error);
         }
     };
 
@@ -175,7 +182,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ toggleOpen }) => {
             </ScrollView>
         </SafeAreaView>
     );
-};
+});
 
 
 export default DrawerContent;

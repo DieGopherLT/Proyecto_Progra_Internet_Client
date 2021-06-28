@@ -4,6 +4,8 @@
 - Código: 215672951
 - Sección: D01
 
-Cliente React Native que consume la siguiente [API](https://github.com/DieGordoLT/Proyecto_Progra_Internet_Server) 
+Cliente React Native que hace consultas al servidor de [heroku](https://github.com/DieGordoLT/Proyecto_Progra_Internet_Server) \
+Y se apoya de la siguiente [página web](https://github.com/DieGordoLT/Proyecto_Progra_Internet_WebClient)
 
-Nota del autor: **¡Hecho con mucho amor en Typescript!**
+
+Nota del Diego: **¡Hecho con mucho amor en Typescript!**

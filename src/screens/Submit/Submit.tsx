@@ -1,18 +1,20 @@
 import React, { FunctionComponent, useState, useEffect, useContext, Fragment } from 'react';
-import { SafeAreaView, ScrollView, View, Text, Image, RefreshControl } from 'react-native';
+import { SafeAreaView, ScrollView, View, Text, Image, RefreshControl, Modal } from 'react-native';
 import { LinearProgress } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Icon } from 'react-native-elements';
 
-import DrawerContent from '../../components/drawer/DrawerContent/DrawerContent';
-import Drawer from '../../components/drawer/Drawer';
+import DrawerContent from '../../components/Drawer/DrawerContent/DrawerContent';
+import Drawer from '../../components/Drawer/Drawer';
 import Navbar from '../../components/Navbar/Navbar';
 import SubmitInitialData from '../../components/SubmitInitialData/SubmitInitialData';
 import SubmitForm from '../../components/SubmitForm/SubmitForm';
+import Button from '../../components/Button';
 
 import useFetch from '../../hooks/useFetch';
 import useDrawer from '../../hooks/useDrawer';
 
+import storage from '../../config/asyncstorage';
 import RankContext from '../../context/RankContext/RankContext';
 import StudentContext from '../../context/StudentContext/StudentContext';
 
@@ -34,6 +36,7 @@ const Submit: FunctionComponent<SubmitProps> = ({ navigation }) => {
 
     const [dataLoaded, setDataLoaded] = useState<boolean>(false);
     const [refreshing, setRefreshing] = useState<boolean>(false);
+    const [showModal, setShowModal] = useState<boolean>(false);
     const [data, setData] = useState({
         daysProgress: 0,
         kilometersProgress: 0,
@@ -44,7 +47,9 @@ const Submit: FunctionComponent<SubmitProps> = ({ navigation }) => {
     const { open, toggleOpen, drawerContent } = useDrawer(DrawerContent);
 
     const [initialDataRequest] = useFetch<SubmitInitialDataResponse>({
-        url: `https://progra-internet-server.herokuapp.com/api/student/places/${ code }`,
+        domain: 'https://progra-internet-server.herokuapp.com/',
+        path: `api/student/places/${ code }`,
+        method: 'GET'
     });
 
     useEffect(() => {
@@ -57,10 +62,18 @@ const Submit: FunctionComponent<SubmitProps> = ({ navigation }) => {
 
     const fetchData = async () => {
         try {
-            const initialDataResponse = await initialDataRequest();
+            const [initialDataResponse, accomplished] = await Promise.all([
+                initialDataRequest(),
+                storage.load<boolean>({ key: 'accomplished' })
+            ]);
             const {
                 currentStudentPlace, lastPlace, date, studentPlace: { student: { Distancia } },
             } = initialDataResponse;
+
+            if(!accomplished && parseInt(Distancia) >= 10000){
+                await storage.save({ key: 'accomplished', data: true, expires: null });
+                setShowModal(true);
+            }
 
             setData({
                 currentPosition: currentStudentPlace,
@@ -123,6 +136,31 @@ const Submit: FunctionComponent<SubmitProps> = ({ navigation }) => {
                 >
                     <Navbar toggleOpen={ toggleOpen }/>
                         <View style={ styles.container }>
+
+                            <Modal
+                                visible={ showModal }
+                                animationType="fade"
+                                transparent
+                            >
+                                <View style={ styles.modalContainer }>
+                                    <Icon
+                                        type="foundation"
+                                        name="trophy"
+                                        color="black"
+                                        size={ 70 }
+                                    />
+                                    <Text style={ styles.modalText }>
+                                        ¡Llegaste a la meta!
+                                    </Text>
+                                    <Button
+                                        backgroundColor="green"
+                                        text="Ok."
+                                        onPress={ () => setShowModal(false) }
+                                        containerStyles={ styles.modalButton }
+                                    />
+                                </View>
+                            </Modal>
+
                             <View style={ styles.goBackContainer }>
                                 <Icon
                                     type="font-awesome"

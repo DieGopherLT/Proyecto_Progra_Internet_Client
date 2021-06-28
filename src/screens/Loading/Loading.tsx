@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useEffect, useContext, useState } from 'react';
-import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
+import React, { FunctionComponent, useEffect, useContext } from 'react';
+import { View, ActivityIndicator, Text } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../interfaces/ReactNavitationTypes';
 

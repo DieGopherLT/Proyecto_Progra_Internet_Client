@@ -20,9 +20,8 @@ const storage = new Storage({
     // the corresponding sync method will be invoked returning
     // the latest data.
     sync: {
-        student: () => {
-            return null;
-        }
+        student: () => null,
+        accomplished: () => false,
     }
 
 });

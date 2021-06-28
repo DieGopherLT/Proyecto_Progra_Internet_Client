@@ -26,5 +26,29 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 10,
         textAlign: 'center'
+    },
+
+    //MODAL
+    modalContainer: {
+        marginTop: 90,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        marginHorizontal: '10%',
+        width: '80%',
+        height: 225,
+        padding: 10,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#939191',
+        borderStyle: 'solid'
+    },
+    modalText: {
+        marginVertical: 10,
+        fontSize: 16
+    },
+    modalButton: {
+        marginHorizontal: '20%',
+        width: '60%'
     }
 });

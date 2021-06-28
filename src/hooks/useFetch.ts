@@ -1,6 +1,19 @@
+type Domains =
+    | 'https://samdt.000webhostapp.com/'
+    | 'http://localhost:4000/'
+    | 'https://progra-internet-server.herokuapp.com/'
+    | 'https://cuceimobile.tech/Escuela/'
+
+type Methods =
+    | 'GET'
+    | 'POST'
+    | 'PUT'
+    | 'DELETE'
+
 interface FetchConfig{
-    url: string;
-    method?: 'POST' | 'GET' | 'PUT' | 'DELETE';
+    domain: Domains
+    path: string;
+    method: Methods;
     headers?: any;
     isString?: boolean;
 }
@@ -8,13 +21,13 @@ interface FetchConfig{
 
 const useFetch = <T = string>(config: FetchConfig) => {
 
-    const { url, method = 'GET', isString = false, headers } = config;
+    const { domain, path, method, isString = false, headers } = config;
 
     type PromiseType = T extends string ? string : T; //Esto es un tipo de dato condicional
     type FetchBody = string | FormData | undefined;
 
     const fetchData = async (body: FetchBody = undefined): Promise<PromiseType> => {
-        const request = await fetch(url, {
+        const request = await fetch(`${domain}${path}`, {
             method,
             body,
             headers

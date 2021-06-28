@@ -4,14 +4,10 @@ import useFetch from '../../hooks/useFetch';
 
 import RankReducer, { RankReducerProps } from './RankReducer';
 import RankContext from './RankContext';
-import StudentContext from '../StudentContext/StudentContext';
 
-import { RankData } from '../../interfaces/Responses';
 import { StudentPlace } from '../../interfaces/RankData.interface';
 
 const RankState: FunctionComponent = ({ children }) => {
-
-    const { student: { code } } = useContext(StudentContext);
 
     const initialState: RankReducerProps = {
         dataLoaded: false,

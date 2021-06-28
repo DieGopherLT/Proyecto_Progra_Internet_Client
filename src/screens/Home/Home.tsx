@@ -4,8 +4,8 @@ import { View, Text, SafeAreaView, ScrollView, RefreshControl } from 'react-nati
 import { LinearProgress } from 'react-native-elements';
 
 import Navbar from '../../components/Navbar/Navbar';
-import Drawer from '../../components/drawer/Drawer';
-import DrawerContent from '../../components/drawer/DrawerContent/DrawerContent';
+import Drawer from '../../components/Drawer/Drawer';
+import DrawerContent from '../../components/Drawer/DrawerContent/DrawerContent';
 import List from '../../components/RankList/List/List';
 
 import useFetch from '../../hooks/useFetch';
@@ -30,13 +30,13 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
     const { student } = useContext(StudentContext);
     const { code } = student;
 
-    // const [studentRankList, setStudentRankList] = useState<StudentPlace[]>([]);
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
     const { open, toggleOpen, drawerContent } = useDrawer(DrawerContent);
 
     const [rankDataRequest] = useFetch<RankData>({
-        url: `https://progra-internet-server.herokuapp.com/api/student/${ code }`,
+        domain: 'https://progra-internet-server.herokuapp.com/',
+        path: `api/student/${ code }`,
         method: 'GET',
     });
 
@@ -85,7 +85,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
             <SafeAreaView>
                 <Navbar toggleOpen={ toggleOpen }/>
                     {
-                        dataLoaded  
+                        dataLoaded
                             ?
                                 (
                                     <ScrollView
