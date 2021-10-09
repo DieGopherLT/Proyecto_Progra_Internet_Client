@@ -23,7 +23,7 @@ const useFetch = <T = string>(config: FetchConfig) => {
 
     const { domain, path, method, isString = false, headers } = config;
 
-    type PromiseType = T extends string ? string : T; //Esto es un tipo de dato condicional
+    type PromiseType = T extends string ? string : T; //This is a conditional data type.
     type FetchBody = string | FormData | undefined;
 
     const fetchData = async (body: FetchBody = undefined): Promise<PromiseType> => {
