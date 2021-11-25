@@ -50,7 +50,7 @@ Mientras la aplicación carga, se muestra en pantalla una pequeña animación y 
 
 #### Funcionalidad para subir imágenes
 
-Aquí me encuentro en mi galería, listo para elegir una imagen. Elegiré la segunda.
+Esta es la galería personal, lista para elegir una imagen. Se elegirá la segunda imagen.
 
 <img src="assets/ChoosingPic.png" height="640" width="360" />
 
@@ -58,20 +58,23 @@ Aquí me encuentro en mi galería, listo para elegir una imagen. Elegiré la seg
 | ---------------------- | -------------------------------------------------------------- |
 | <img src="assets/SelectedPicture.png" height="640" width="360" /> | <img src="assets/MainWithNewPicture.png" height="640" width="360" /> |
 
-Ahora rellenaré con unos cuantos participantes más con nombres e imágenes de tecnologías con fines demostrativos.
+Se agregaron unos cuantos participantes más con nombres e imágenes de tecnologías a fin de visualizar el ranking con más participantes. Todo esto con fines meramente demostrativos.
 
 <img src="assets/MainFilled.png" height="640" width="360" />
 
-#### Vistas relacionadas con tu progreso en la carrera
+#### Vistas relacionadas con el progreso en la carrera
 
-En estas 2 pantallas puedes ver tu progreso dentro de la carrera respecto a cuantos dias quedan (son 10) y cuantos kilómetros
-te faltan para llegar a la meta (10 también).
+En las siguientes 2 vistas se puede visualizar el progreso dentro de la carrera en 2 aspectos: 
+- Cuan cerca está el evento por finalizar, son 10 días.
+- Cuan cerca se encuentra de la meta, son 10 kilómetros.
+
+Adicionalmente, también se puede consultar la posición dentro de la carrera y conocer cuantos participantes existen en total desde esta vista.
 
 | Visualización de tu progreso | Formulario para subir tus progresos |
 | ---------------------- | -------------------------------------------------------------- |
 | <img src="assets/Progress.png" height="640" width="360" /> | <img src="assets/ProgressForm.png" height="640" width="360" /> |
 
-Ahora vamos a hacer una solicitud para actualizar nuestro progreso, la imagen no es la adecuada para subir como evidencia, solo esta puesta con fines demostrativos.
+A continuación se realizará una solicitud para actualizar el progreso llenando el formulario, la imagen mostrada no es la adecuada para subir como evidencia, solo está puesta con fines demostrativos.
 
 | Llenando la solicitud | Recibiendo respuesta |
 | ---------------------- | -------------------------------------------------------------- |
