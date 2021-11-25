@@ -20,7 +20,7 @@ para la meta y ver cuantos días faltan para que termine la carrera.
 El proyecto cuenta con bastantes funcionalidades entre las que se encuentran:
 
 - Inicio de sesión con código y NIP (credenciales de estudiantes de la UDG).
-- Ver el estado actual del ranking, los 3 primeros lugares y donde te situas
+- Ver el estado actual del ranking, los 3 primeros lugares y donde te sitúas
   (en caso de que no estés en los 3 primeros).
 - Pull to refresh para actualizar el ranking.
 - Cuenta con un menú hamburguesa en la parte superior que al presionarlo permite:
@@ -58,7 +58,7 @@ Aquí me encuentro en mi galería, listo para elegir una imagen. Elegiré la seg
 | ---------------------- | -------------------------------------------------------------- |
 | <img src="assets/SelectedPicture.png" height="640" width="360" /> | <img src="assets/MainWithNewPicture.png" height="640" width="360" /> |
 
-Ahora rellenaré con unos cuantos participantes más con nombres e imágenes de tecnologías con fines demostrativos
+Ahora rellenaré con unos cuantos participantes más con nombres e imágenes de tecnologías con fines demostrativos.
 
 <img src="assets/MainFilled.png" height="640" width="360" />
 
@@ -71,4 +71,16 @@ te faltan para llegar a la meta (10 también).
 | ---------------------- | -------------------------------------------------------------- |
 | <img src="assets/Progress.png" height="640" width="360" /> | <img src="assets/ProgressForm.png" height="640" width="360" /> |
 
-Nota del Diego: **¡Hecho con mucho amor en Typescript!**
+Ahora vamos a hacer una solicitud para actualizar nuestro progreso, la imagen no es la adecuada para subir como evidencia, solo esta puesta con fines demostrativos.
+
+| Llenando la solicitud | Recibiendo respuesta |
+| ---------------------- | -------------------------------------------------------------- |
+| <img src="assets/ProgressRequest.png" height="640" width="360" /> | <img src="assets/ProgressRequestResponse.png" height="640" width="360" /> |
+
+Ahora en la página web cuyo repositorio puede ser consultado [aquí](https://github.com/DieGopherLT/Proyecto_Progra_Internet_WebClient) esa solicitud fue enviada, desde ahí
+un administrador podrá ver la solicitud de progreso y aprobarla o rechazarla.
+
+<img src="assets/WebProgress.png" />
+
+De aprobarse la solicitud, el progreso del solicitante se le sumará a su progreso actual el tiempo y distancia recorrida mostrada en pantalla.
+De ser rechazada, nada cambiará.
